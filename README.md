@@ -12,12 +12,6 @@ Simulation **Monte Carlo** du **MASI (Moroccan All Shares Index)** afin de g√©n√
 - [3. Probability assumption](#3-probability-assumption)
 - [4. Parameter estimation](#4-parameter-estimation)
 - [5. Random shocks](#5-random-shocks)
-- [6. GBM model](#6-gbm-model)
-- [7. Building simulated paths](#7-building-simulated-paths)
-- [8. Quantiles and prediction band](#8-quantiles-and-prediction-band)
-- [9. Risk metrics](#9-risk-metrics)
-- [10. Limitations](#10-limitations)
-- [Project structure](#project-structure)
 - [Minimal code](#minimal-code)
 
 ---
@@ -100,3 +94,41 @@ In code:
 
 ```python
 Z = np.random.normal(0, 1, size=(N, T))
+import numpy as np
+import pandas as pd
+
+# --- Load data ---
+df = pd.read_csv("data/masi.csv")
+df["Date"] = pd.to_datetime(df["Date"])
+df = df.sort_values("Date").drop_duplicates("Date")
+df = df.set_index("Date")
+
+S = df["Value"]  # adapt column name
+
+# --- Log returns ---
+r = np.log(S / S.shift(1)).dropna()
+
+# --- Estimate parameters (daily) ---
+mu_daily = r.mean()
+sigma_daily = r.std()
+
+# --- Annualize ---
+mu = 252 * mu_daily
+sigma = np.sqrt(252) * sigma_daily
+
+# --- Simulate paths ---
+S0 = S.iloc[-1]
+N = 10000
+T = 252
+dt = 1/252
+
+Z = np.random.normal(0, 1, size=(N, T))
+increments = (mu - 0.5*sigma**2)*dt + sigma*np.sqrt(dt)*Z
+
+log_paths = np.cumsum(increments, axis=1)
+S_paths = S0 * np.exp(log_paths)
+
+# --- Quantiles (per day) ---
+q05 = np.percentile(S_paths, 5, axis=0)
+q50 = np.percentile(S_paths, 50, axis=0)
+q95 = np.percentile(S_paths, 95, axis=0)
