@@ -12,7 +12,7 @@ Simulation **Monte Carlo** du **MASI (Moroccan All Shares Index)** afin de g√©n√
 - [3. Probability assumption](#3-probability-assumption)
 - [4. Parameter estimation](#4-parameter-estimation)
 - [5. Random shocks](#5-random-shocks)
-- [6-Minimal code](#minimal-code)
+- [6.Minimal code](#minimal-code)
 
 ---
 
