@@ -90,6 +90,9 @@ where:
 - \(t\) is the day index (1..T)
 - \(s\) is the scenario index (1..N)
 
+
+
+##minimal-code
 In code:
 
 ```python
